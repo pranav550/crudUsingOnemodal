@@ -1,0 +1,160 @@
+<!-- navbar Start  -->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Employee List <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" data-toggle="modal" data-target="#exampleModal" (click)="loadName()">Add Employee</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- navbar End  -->
+
+
+<!-- add Employee -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{headerName}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="formNew()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <form name="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+                    <div class="form-group">
+                        <label for="id">Id</label>
+                        <input type="text" class="form-control" formControlName="id" id="id" required />
+                        <div *ngIf="
+                                form.controls['id'].invalid &&
+                        (form.controls['id'].touched || form.controls['id'].dirty) ">
+                            <label class="text-danger" *ngIf="form.controls['id'].hasError('required')">
+                Id is Required!
+              </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name"> Name</label>
+                        <input type="text" class="form-control" formControlName="name" id="name" required />
+                        <div *ngIf="
+                                form.controls['name'].invalid &&
+                        (form.controls['name'].touched || form.controls['name'].dirty) ">
+                            <label class="text-danger" *ngIf="form.controls['name'].hasError('required')">
+                Name is Required!
+              </label>
+                            <label class="text-danger" *ngIf="form.controls['name'].hasError('pattern')">
+                Name is Invalid
+              </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" value="male" formControlName="gender" name="gender" required> Male
+                        <input type="radio" value="female" formControlName="gender" name="gender" required> Female
+                        <div *ngIf="
+                        form.controls['gender'].invalid &&
+                (form.controls['gender'].touched || form.controls['gender'].dirty) ">
+                            <label class="text-danger" *ngIf="form.controls['gender'].hasError('required')">
+                gender is Required!
+              </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select formControlName="category" class="form-control" name="category" id="category" required>
+              <option [ngValue]="null">Select Category</option>
+
+              <option [value]="category" *ngFor="let category of categories">{{category}}</option>
+            </select>
+                        <div *ngIf="
+                      form.controls['category'].invalid &&
+              (form.controls['category'].touched || form.controls['category'].dirty) ">
+                            <label class="text-danger" *ngIf="form.controls['category'].hasError('required')">
+                category is Required!
+              </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" [disabled]="!form.valid" *ngIf="isAdd">Add</button>
+                        <button class="btn btn-primary" [disabled]="!form.valid" *ngIf="isEdit" (click)="updateName(multiview)">Edit</button>
+                    </div>
+
+                    <!-- <pre>{{form.value | json}}</pre> -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- add Employee end -->
+
+<!-- table code  -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Country</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let emp of Employees; let i= index">
+                        <td> {{emp.id }}</td>
+                        <td>{{emp.name}}</td>
+                        <td>{{emp.gender}}</td>
+                        <td> {{emp.category}}</td>
+                        <td>
+                            <button (click)="viewEmp(emp)" class="btn btn-primary"> View</button>
+                            <button (click)="editEmp(emp)" class="btn btn-info" data-toggle="modal" data-target="#exampleModal" (click)=" editEmp(emp)"> Edit</button>
+                            <button (click)="deleteEmp(emp,i)" class="btn btn-danger"> Delete</button></td>
+                    </tr>
+                    <tr *ngIf="Employees<='0'">
+                        No data found...
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- table code end -->
+
+        <!-- view Form -->
+        <div class="col-md-2" [hidden]="isDisplay" *ngIf="newview.length>0 && (multiview===view)">
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    User Information
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">{{view.id}}</li>
+                    <li class="list-group-item">{{view.name}}</li>
+                    <li class="list-group-item">{{view.gender}}</li>
+                    <li class="list-group-item">{{view.category}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- view Form  end-->
+
+<!-- edit Form -->
+
+
+<!-- edit Form end -->
